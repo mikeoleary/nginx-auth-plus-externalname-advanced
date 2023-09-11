@@ -1,0 +1,19 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: route-private
+  namespace: private
+spec:
+  host: demo.my-f5.com
+  upstreams:
+  - name: private
+    service: private-svc
+    port: 80
+  subroutes:
+  - path: /private
+    action:
+      proxy:
+        upstream: private
+        rewritePath: /
+    location-snippets: |
+      auth_request /auth;

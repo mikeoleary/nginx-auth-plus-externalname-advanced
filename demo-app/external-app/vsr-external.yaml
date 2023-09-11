@@ -1,0 +1,15 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: route-external
+  namespace: external
+spec:
+  host: demo.my-f5.com
+  upstreams:
+  - name: external
+    service: externalservice-my-f5-com
+    port: 80
+  subroutes:
+  - path: /external
+    action:
+      pass: external

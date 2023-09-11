@@ -1,0 +1,23 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: hello-world
+  namespace: hello-world
+spec:
+  host: demo.my-f5.com
+  upstreams:
+    - name: hello-world-upstream
+      service: hello-world
+      port: 8080
+  routes:
+    - path: /
+      action:
+        proxy:
+          upstream: hello-world-upstream
+    - path: /external
+      route: external/route-external
+    - path: /private
+      route: private/route-private
+    - path: /auth
+      route: auth/route-auth
+

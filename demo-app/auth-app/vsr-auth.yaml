@@ -1,0 +1,21 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: route-auth
+  namespace: auth
+spec:
+  host: demo.my-f5.com
+  upstreams:
+  - name: auth
+    service: auth-my-f5-com
+    port: 80
+  subroutes:
+  - path: /auth
+    action:
+      proxy:
+        upstream: auth
+    location-snippets: | 
+      internal;
+      proxy_pass_request_body off;
+      proxy_set_header Content-Length "";
+      proxy_set_header X-Original-URI $request_uri;
