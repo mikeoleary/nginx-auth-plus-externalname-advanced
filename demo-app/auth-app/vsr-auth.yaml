@@ -15,7 +15,15 @@ spec:
       proxy:
         upstream: auth
     location-snippets: | 
-      internal;
+      internal;      
+
       proxy_pass_request_body off;
       proxy_set_header Content-Length "";
       proxy_set_header X-Original-URI $request_uri;
+
+      proxy_cache           token_responses; # Enable caching
+      proxy_cache_key       $http_apikey;    # Cache for each access token
+      proxy_cache_lock      on;              # Duplicate tokens must wait
+      proxy_cache_valid     204 60s;         # Cache 204 responses for this many seconds
+      proxy_cache_valid     401 300s;         # Cache 401 responses for this many seconds
+      proxy_ignore_headers  Cache-Control Expires Set-Cookie;

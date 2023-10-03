@@ -1,0 +1,32 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: njs-cm
+  namespace: nginx-ingress
+data:
+  auth_keyval.js: |
+    function introspectAccessToken(r) {
+        if (r.variables.token_data) {
+            tokenResult(r); // Existing response in key-value store so do validation
+        } else {
+            r.subrequest("/auth",
+                function(reply) {
+                    r.variables.token_data = reply.status; // Create entry
+                    tokenResult(r); // Do validation of response
+                }
+            );
+        }
+    }
+
+    function tokenResult(r) {
+      var response = r.variables.token_data;
+
+      if (response == 204) {
+        r.return(204);
+      } else {
+        r.return(401);
+      }
+    }
+
+    export default { introspectAccessToken }
+    

@@ -16,4 +16,4 @@ spec:
         upstream: private
         rewritePath: /
     location-snippets: |
-      auth_request /auth;
+      auth_request /auth_js;

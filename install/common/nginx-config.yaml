@@ -5,3 +5,16 @@ metadata:
   namespace: nginx-ingress
 data:
   resolver-addresses: kube-dns.kube-system.svc.cluster.local
+  resolver-valid: 5s
+  main-snippets: load_module modules/ngx_http_js_module.so;
+  stream-snippets: |
+    server {
+        listen 12345;
+        listen [::]:12345;
+        zone_sync;
+        zone_sync_server nginx-ingress-headless.nginx-ingress.svc.cluster.local:12345 resolve;
+    }
+  http-snippets: |
+    proxy_cache_path /var/cache/nginx/auth keys_zone=token_responses:1m max_size=2m; #location on disk to store cached responses
+    keyval_zone zone=access_tokens:4m timeout=300s sync;
+    keyval $http_apikey $token_data zone=access_tokens;

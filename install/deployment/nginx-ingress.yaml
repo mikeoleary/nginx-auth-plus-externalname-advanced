@@ -20,10 +20,19 @@ spec:
       serviceAccountName: nginx-ingress
       imagePullSecrets:
       - name: regcred
+      volumes:
+      - name: njs-volume
+        configMap:
+          name: njs-cm
+        # Provide the name of the ConfigMap containing the files you want
+        # to add to the contai
       containers:
       - image: private-registry.nginx.com/nginx-ic/nginx-plus-ingress:3.2.1
         imagePullPolicy: IfNotPresent
         name: nginx-ingress
+        volumeMounts:
+        - name: njs-volume
+          mountPath: /etc/nginx/njs
         ports:
         - name: http
           containerPort: 80
@@ -60,6 +69,7 @@ spec:
           - -default-server-tls-secret=$(POD_NAMESPACE)/default-server-secret
           - -nginx-plus
           - -enable-snippets=true
+          - -nginx-status-allow-cidrs=10.0.0.0/8,127.0.0.1,::1
          #- -v=3 # Enables extensive logging. Useful for troubleshooting.
          #- -report-ingress-status
          #- -external-service=nginx-ingress

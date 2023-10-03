@@ -5,6 +5,16 @@ metadata:
   namespace: hello-world
 spec:
   host: demo.my-f5.com
+  http-snippets: |
+    js_import /etc/nginx/njs/auth_keyval.js;
+  server-snippets: |
+    location /auth_js {
+      internal;
+      js_content auth_keyval.introspectAccessToken; 
+      } 
+    location /api {
+      api write=on;
+    }
   upstreams:
     - name: hello-world-upstream
       service: hello-world
@@ -19,5 +29,5 @@ spec:
     - path: /private
       route: private/route-private
     - path: /auth
-      route: auth/route-auth
+      route: auth/route-auth 
 
